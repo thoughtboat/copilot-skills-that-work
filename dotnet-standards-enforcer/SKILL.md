@@ -8,7 +8,7 @@ description: >-
   bring this up to standard, make this code production-ready.
   DO NOT USE FOR: non-.NET codebases, read-only .NET questions, trivial single-variable edits.
 version: "1.1.0"
-updatedAt: "2026-03-10"
+updatedAt: "2026-03-11"
 ---
 
 ## Use When
@@ -16,17 +16,13 @@ updatedAt: "2026-03-10"
 Invoke this skill when the user asks to:
 
 - **Review, audit, or enforce** .NET / C# coding standards across a solution or project.
-  - *Phrases:* "review my C# code", "audit this project", "enforce coding standards", "check my code against our standards", "does this follow best practices?", "review this for code quality"
 - **Fix or clean up** code quality issues in one or more C# files.
-  - *Phrases:* "clean up my code", "clean up this class", "fix style issues", "fix code quality issues", "tidy up this file", "refactor this to meet standards", "make this code production-ready"
 - **Apply coding standards or best practices** to a specific area or the whole codebase.
-  - *Phrases:* "apply coding standards", "apply .NET best practices", "improve this code", "make this idiomatic C#", "bring this up to standard"
 - **Prepare code for a pull request or code review** by ensuring it meets team standards.
-  - *Phrases:* "get this PR-ready", "prepare for code review", "review before I merge"
 - **Onboard a new codebase** to organisation-wide .NET conventions.
-  - *Phrases:* "apply our standards to this new project", "standardise this codebase"
-- The user explicitly references any sub-skill area: documentation, architecture, DI, localisation, async patterns, configuration, error handling, code quality.
-  - *Phrases:* "add XML docs", "fix async patterns", "check DI registration", "check error handling"
+- Explicitly reference a sub-skill area: documentation, architecture, DI, localisation, async patterns, configuration, error handling, or code quality.
+
+> See [references/trigger-phrases.md](references/trigger-phrases.md) for example trigger phrases per category.
 
 Do **not** invoke this skill for:
 

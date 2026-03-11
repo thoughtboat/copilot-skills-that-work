@@ -1,13 +1,13 @@
 ---
 name: dotnet-standards-enforcer
 description: >-
-  Master orchestrator — enforces all .NET/C# code standards and automatically applies fixes across the solution/project.
+  Reviews and refactors .NET/C# code: fixes async patterns, validates DI registration, corrects error handling, adds documentation, enforces style conventions.
   USE FOR: review C# code, audit project, enforce coding standards, apply .NET best practices, clean up code, fix style issues,
   apply coding standards, tidy up this file, make this idiomatic C#, fix code quality issues, get PR-ready, prepare for code review,
   add documentation, fix async patterns, check DI registration, check error handling, fix configuration,
   bring this up to standard, make this code production-ready.
   DO NOT USE FOR: non-.NET codebases, read-only .NET questions, trivial single-variable edits.
-version: "1.1.0"
+version: "1.1.1"
 updatedAt: "2026-03-11"
 ---
 

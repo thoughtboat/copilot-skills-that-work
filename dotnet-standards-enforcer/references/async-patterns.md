@@ -17,9 +17,11 @@ Analyze `${selection}` if provided. If no selection is made, analyze ALL C# file
 
 - Use `async`/`await` for all I/O operations and long-running tasks.
 - Return `Task` or `Task<T>` from async methods. Never return `void` from async methods (except event handlers).
-- Use `ConfigureAwait(false)` in library/infrastructure code to avoid deadlocks.
-- Always pass and respect `CancellationToken` in async method signatures.
+- Use `ConfigureAwait(false)` in **library and infrastructure code** to avoid deadlocks. In ASP.NET Core application-layer code, no `SynchronizationContext` is present so deadlocks cannot occur — `ConfigureAwait(false)` there is a style choice, not a correctness requirement.
+- Always pass and respect `CancellationToken` in async method signatures. By convention the `CancellationToken` must be the **last parameter**.
 - Handle async exceptions with `try`/`catch` rather than `.Result` or `.Wait()`.
+- Use `IAsyncEnumerable<T>` with `await foreach` for streaming or large data sets to avoid buffering the entire result in memory.
+- Use `ValueTask<T>` instead of `Task<T>` for hot-path methods that frequently complete synchronously (e.g., cached reads), to reduce heap allocations.
 
 ### Example
 
@@ -39,6 +41,6 @@ public async Task<Risk?> GetByIdAsync(Guid id, CancellationToken cancellationTok
 
 ## Findings Summary Format
 
-| File | Section Violated | Description | Recommended Fix |
-|------|-----------------|-------------|-----------------|
-| ...  | Async/Await Patterns | Synchronous blocking call `.Result` used | Convert to `await` with `ConfigureAwait(false)` |
+| File | Severity | Section Violated | Description | Recommended Fix |
+|------|----------|-----------------|-------------|-----------------||
+| ...  | Critical | Async/Await Patterns | Synchronous blocking call `.Result` used | Convert to `await` with `ConfigureAwait(false)` |

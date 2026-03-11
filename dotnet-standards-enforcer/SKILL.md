@@ -1,14 +1,66 @@
 ---
 name: dotnet-standards-enforcer
-description: 'Master orchestrator — enforces all .NET/C# code standards and automatically applies fixes across the solution/project.'
+description: >-
+  Master orchestrator — enforces all .NET/C# code standards and automatically applies fixes across the solution/project.
+  USE FOR: review C# code, audit project, enforce coding standards, apply .NET best practices, clean up code, fix style issues,
+  apply coding standards, tidy up this file, make this idiomatic C#, fix code quality issues, get PR-ready, prepare for code review,
+  add documentation, fix async patterns, check DI registration, check error handling, fix configuration,
+  bring this up to standard, make this code production-ready.
+  DO NOT USE FOR: non-.NET codebases, read-only .NET questions, trivial single-variable edits.
+version: "1.1.0"
+updatedAt: "2026-03-10"
 ---
+
+## Use When
+
+Invoke this skill when the user asks to:
+
+- **Review, audit, or enforce** .NET / C# coding standards across a solution or project.
+  - *Phrases:* "review my C# code", "audit this project", "enforce coding standards", "check my code against our standards", "does this follow best practices?", "review this for code quality"
+- **Fix or clean up** code quality issues in one or more C# files.
+  - *Phrases:* "clean up my code", "clean up this class", "fix style issues", "fix code quality issues", "tidy up this file", "refactor this to meet standards", "make this code production-ready"
+- **Apply coding standards or best practices** to a specific area or the whole codebase.
+  - *Phrases:* "apply coding standards", "apply .NET best practices", "improve this code", "make this idiomatic C#", "bring this up to standard"
+- **Prepare code for a pull request or code review** by ensuring it meets team standards.
+  - *Phrases:* "get this PR-ready", "prepare for code review", "review before I merge"
+- **Onboard a new codebase** to organisation-wide .NET conventions.
+  - *Phrases:* "apply our standards to this new project", "standardise this codebase"
+- The user explicitly references any sub-skill area: documentation, architecture, DI, localisation, async patterns, configuration, error handling, code quality.
+  - *Phrases:* "add XML docs", "fix async patterns", "check DI registration", "check error handling"
+
+Do **not** invoke this skill for:
+
+- Non-C# / non-.NET codebases.
+- Read-only questions about .NET (e.g. "how does `IOptions` work?") — answer directly without running the full skill.
+- Single-file, trivial edits unrelated to standards (e.g. "rename this variable", "add a property").
+
+## Pre-Flight: Detect Target Framework
+
+Before processing any files, inspect every `*.csproj` in the workspace:
+
+- Read `<LangVersion>` and `<TargetFramework>` / `<TargetFrameworks>`.
+- Record the minimum C# language version across all projects.
+- Sub-skills that reference **C# 10+** features (file-scoped namespaces), **C# 11+** features (`required` keyword), or **C# 12+** features (collection expressions, primary constructors) must only be applied when the detected language version supports them.
 
 ## Scope
 
-Analyze `${selection}` if provided. If no selection is made, analyze ALL C# files (`**/*.cs`) in the workspace.
+Analyze `${selection}` if provided. If no selection is made, analyze ALL C# files (`**/*.cs`) in the workspace, **excluding the files listed below**.
+
+## Excluded Files
+
+Skip files matching these patterns — applying fixes to generated or migrated code causes build failures:
+
+- `**/*.g.cs`, `**/*.Designer.cs` — auto-generated source
+- `**/obj/**`, `**/bin/**` — build output
+- `**/Migrations/**` — EF Core migration files
+
+**Test projects** (files under a project whose name contains `Tests`, `Specs`, or `Test`):
+- Skip sub-skills **1 (Documentation)** and **4 (Localization)** — these produce noise in test code.
+- Apply all remaining sub-skills normally.
 
 ## Execution Rules
 
+- **Before applying each sub-skill**, use the file reading tool to load the sub-skill file listed in the table below. Do not rely on memorised rules.
 - Process **every file in scope**. Do not skip any.
 - Execute **each sub-skill below in order**, sequentially, for every file.
 - After completing all sub-skills, output a **consolidated findings summary table** grouped by file and category.
@@ -25,28 +77,35 @@ Analyze `${selection}` if provided. If no selection is made, analyze ALL C# file
 
 | # | Sub-Skill | File | Focus Area |
 |---|-----------|------|------------|
-| 1 | Documentation | [skills/documentation.md](skills/documentation.md) | XML docs, namespace structure |
-| 2 | Architecture | [skills/architecture.md](skills/architecture.md) | Design patterns, Impl folder, primary constructors |
-| 3 | DI & Services | [skills/di-services.md](skills/di-services.md) | DI registration, service interfaces, null guards |
-| 4 | Localization | [skills/localization.md](skills/localization.md) | Hard-coded strings, .resx files, ResourceManager |
-| 5 | Async Patterns | [skills/async-patterns.md](skills/async-patterns.md) | async/await, ConfigureAwait, CancellationToken |
-| 6 | Configuration | [skills/configuration.md](skills/configuration.md) | Strongly-typed options, data annotations |
-| 7 | Error Handling | [skills/error-handling.md](skills/error-handling.md) | Structured logging, specific exceptions |
-| 8 | Code Quality | [skills/code-quality.md](skills/code-quality.md) | SOLID, naming, constants, usings, disposal |
+| 1 | Documentation | [references/documentation.md](references/documentation.md) | XML docs, inheritdoc, namespace structure |
+| 2 | Architecture | [references/architecture.md](references/architecture.md) | Design patterns, records, primary constructors |
+| 3 | DI & Services | [references/di-services.md](references/di-services.md) | DI registration, service interfaces, null guards, captive dependencies |
+| 4 | Localization | [references/localization.md](references/localization.md) | User-facing strings, IStringLocalizer, .resx files |
+| 5 | Async Patterns | [references/async-patterns.md](references/async-patterns.md) | async/await, ConfigureAwait, CancellationToken, ValueTask |
+| 6 | Configuration | [references/configuration.md](references/configuration.md) | Strongly-typed options, IOptions variants, data annotations |
+| 7 | Error Handling | [references/error-handling.md](references/error-handling.md) | Structured logging, LoggerMessage, specific exceptions, ProblemDetails |
+| 8 | Code Quality | [references/code-quality.md](references/code-quality.md) | SOLID, nullable annotations, naming, constants, usings, disposal |
 
 ## Consolidated Findings Summary Format
 
 After all sub-skills are complete, produce a single Markdown table:
 
-| File | Sub-Skill | Section Violated | Description | Recommended Fix |
-|------|-----------|-----------------|-------------|-----------------|
-| ...  | ...       | ...             | ...         | ...             |
+| File | Sub-Skill | Severity | Description | Recommended Fix |
+|------|-----------|----------|-------------|-----------------|
+| ...  | ...       | Critical / Warning / Info | ...         | ...             |
+
+**Severity definitions:**
+- **Critical** — runtime risk or correctness bug. Must be fixed before merging.
+- **Warning** — standards violation that degrades maintainability or performance.
+- **Info** — style or convention improvement; no functional impact.
+
 ## Apply Findings
 
-After outputting the summary table, apply **every finding** in order:
+After outputting the summary table, apply findings in order:
 
 1. Open the identified file.
 2. Write the corrected code directly to the file.
 3. Preserve all unchanged code using `// ...existing code...`.
 4. Confirm each applied fix with a `✅` checklist item.
-5. Do not skip any finding — the skill is not complete until all fixes are written to disk.
+5. **Critical and Warning** findings must all be fixed. **Info** findings are optional but encouraged.
+6. Do not stop until all Critical and Warning findings are written to disk.

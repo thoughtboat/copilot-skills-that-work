@@ -27,6 +27,11 @@ Analyze `${selection}` if provided. If no selection is made, analyze ALL C# file
 - Implement `IDisposable` / `IAsyncDisposable` patterns for types holding unmanaged resources.
 - Move all constants to a **separate `static` class** (e.g., `RiskDomainConstants`).
 - Format code according to C# conventions: consistent spacing, braces on new lines, no trailing whitespace.
+- Enable **nullable reference types** (`<Nullable>enable</Nullable>` in the project file). Annotate nullable parameters and return types with `?`; avoid the null-forgiving operator (`!`) except where unavoidable.
+- Use **file-scoped namespaces** (`namespace Foo.Bar;`) in all new or touched files to reduce nesting (requires C# 10+).
+- Prefer `var` when the type is immediately obvious from the right-hand side. Use explicit types when clarity is improved.
+- Prefer **pattern matching** (`switch` expressions, `is` patterns, positional deconstruction) over long `if`/`else` chains or legacy `switch` statements.
+- Use **collection expressions** (`[item1, item2]`) for array and collection initialisation where supported (requires C# 12+).
 
 ### Constants Example
 
@@ -45,6 +50,6 @@ if (risk.Score > RiskDomainConstants.CriticalScoreThreshold) { ... }
 
 ## Findings Summary Format
 
-| File | Section Violated | Description | Recommended Fix |
-|------|-----------------|-------------|-----------------|
-| ...  | Code Quality | Magic number used inline | Extract to `RiskDomainConstants` static class |
+| File | Severity | Section Violated | Description | Recommended Fix |
+|------|----------|-----------------|-------------|-----------------||
+| ...  | Warning  | Code Quality | Magic number used inline | Extract to `RiskDomainConstants` static class |

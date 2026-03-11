@@ -17,7 +17,9 @@ Analyze `${selection}` if provided. If no selection is made, analyze ALL C# file
 
 - Create comprehensive XML documentation comments for all public classes, interfaces, methods, and properties.
 - Include `<summary>`, `<param name="...">`, `<returns>`, and `<exception cref="...">` tags where applicable.
-- Follow the established namespace structure: `{Core|Console|App|Service}.{Feature}`.
+- On interface implementations, prefer `/// <inheritdoc />` over duplicating the interface summary — this keeps docs in sync and reduces duplication.
+- Use `<remarks>` for extended explanations and `<example>` with `<code>` blocks for usage samples on complex public APIs.
+- The namespace convention `{Core|Console|App|Service}.{Feature}` is an **example pattern** from one project. Match the namespace structure already established in the target codebase; do not impose this pattern on projects with different conventions.
 
 ### Example
 
@@ -34,6 +36,6 @@ public async Task<Risk?> GetByIdAsync(Guid id, CancellationToken cancellationTok
 
 ## Findings Summary Format
 
-| File | Section Violated | Description | Recommended Fix |
-|------|-----------------|-------------|-----------------|
-| ...  | Documentation & Structure | Missing XML doc on public method `GetByIdAsync` | Add `<summary>`, `<param>`, `<returns>` tags |
+| File | Severity | Section Violated | Description | Recommended Fix |
+|------|----------|-----------------|-------------|-----------------||
+| ...  | Info     | Documentation & Structure | Missing XML doc on public method `GetByIdAsync` | Add `<summary>`, `<param>`, `<returns>` tags |

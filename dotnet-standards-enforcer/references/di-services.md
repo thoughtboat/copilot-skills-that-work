@@ -17,8 +17,10 @@ Analyze `${selection}` if provided. If no selection is made, analyze ALL C# file
 
 - Use **constructor dependency injection** with `ArgumentNullException.ThrowIfNull` guards.
 - Register services with appropriate lifetimes: `Singleton`, `Scoped`, or `Transient`.
+- **Avoid captive dependencies**: a `Singleton` service must not depend on a `Scoped` or `Transient` service. The shorter-lived service is captured for the application’s lifetime, leading to stale state and concurrency bugs.
 - Use `Microsoft.Extensions.DependencyInjection` patterns (`IServiceCollection` extension methods).
 - Implement **service interfaces** for all services to support testability and mocking.
+- For multiple implementations of the same interface, use **.NET 8+ Keyed Services** (`services.AddKeyedScoped<IFoo, Bar>("key")`) rather than factory delegates or ad-hoc named-service patterns.
 
 ### Example
 
@@ -42,6 +44,6 @@ public static class RiskServiceExtensions
 
 ## Findings Summary Format
 
-| File | Section Violated | Description | Recommended Fix |
-|------|-----------------|-------------|-----------------|
-| ...  | Dependency Injection & Services | Service registered without interface | Extract interface and register via `AddScoped<IFoo, Foo>()` |
+| File | Severity | Section Violated | Description | Recommended Fix |
+|------|----------|-----------------|-------------|-----------------||
+| ...  | Warning  | Dependency Injection & Services | Service registered without interface | Extract interface and register via `AddScoped<IFoo, Foo>()` |

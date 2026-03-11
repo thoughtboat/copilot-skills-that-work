@@ -1,6 +1,6 @@
 # dotnet-standards-enforcer Skill
 
-A GitHub Copilot **skill** that acts as a master orchestrator, enforcing code standards across every C# file in the workspace by running nine ordered sub-skills and automatically applying all fixes.
+A GitHub Copilot **skill** that acts as a master orchestrator, enforcing code standards across every C# file in the workspace by running eight ordered sub-skills and automatically applying all fixes.
 
 ---
 
@@ -18,7 +18,7 @@ A GitHub Copilot **skill** that acts as a master orchestrator, enforcing code st
 When invoked, the skill:
 
 1. Scopes the analysis to either the current **selection** or **all `*.cs` files** in the workspace.
-2. Runs nine ordered sub-skills against every file in scope.
+2. Runs eight ordered sub-skills against every file in scope.
 3. Outputs a **consolidated findings summary table** (file · sub-skill · violation · recommended fix).
 4. **Writes every fix directly to disk** — it does not stop at suggestions.
 5. If the context window is exhausted mid-run it emits a **checkpoint summary** so the review can be resumed in the next prompt.
@@ -29,14 +29,14 @@ When invoked, the skill:
 
 | # | Sub-skill | Focus area |
 |---|-----------|------------|
-| 1 | **Documentation** | XML doc comments (`<summary>`, `<param>`, `<returns>`, `<exception>`), namespace structure |
-| 2 | **Architecture** | Primary constructors, Command Handler pattern, `Impl/` folder placement, interface segregation |
-| 3 | **DI & Services** | Constructor injection, `ArgumentNullException.ThrowIfNull` guards, service lifetimes, `IServiceCollection` extension methods |
-| 4 | **Localization** | Hard-coded strings → `LogMessages.resx` / `ErrorMessages.resx`, `ResourceManager` access |
-| 5 | **Async Patterns** | `async`/`await`, `ConfigureAwait(false)`, `CancellationToken` propagation, no `.Result`/`.Wait()` |
-| 6 | **Configuration** | Strongly-typed options classes, data annotation validation, `appsettings.{Environment}.json` |
-| 7 | **Error Handling** | Structured logging (`ILogger<T>`), message templates, specific exception types, log scopes |
-| 8 | **Code Quality** | SOLID principles, naming conventions, unused `using` removal, constants extraction, `IDisposable` |
+| 1 | **Documentation** | XML doc comments (`<summary>`, `<param>`, `<returns>`, `<exception>`), `<inheritdoc/>`, namespace structure |
+| 2 | **Architecture** | Primary constructors, records for DTOs/value objects, handler pattern, interface segregation |
+| 3 | **DI & Services** | Constructor injection, `ArgumentNullException.ThrowIfNull` guards, service lifetimes, captive dependency detection, Keyed Services |
+| 4 | **Localization** | User-facing strings only → `ErrorMessages.resx`, `IStringLocalizer<T>` (log templates must stay as static literals) |
+| 5 | **Async Patterns** | `async`/`await`, `ConfigureAwait(false)` context, `CancellationToken` propagation, `ValueTask`, `IAsyncEnumerable<T>` |
+| 6 | **Configuration** | Strongly-typed options classes, `IOptions` / `IOptionsSnapshot` / `IOptionsMonitor` selection, `sealed` + `required` |
+| 7 | **Error Handling** | Structured logging, `[LoggerMessage]` source generator, `IExceptionHandler`, `ProblemDetails`, specific exception types |
+| 8 | **Code Quality** | SOLID, nullable annotations, file-scoped namespaces, pattern matching, naming, constants, `IDisposable` |
 
 ---
 
@@ -84,10 +84,10 @@ Read .github/skills/dotnet-standards-enforcer/skills/async-patterns.md and apply
 
 After analysis the skill produces a single Markdown table, then patches every file:
 
-| File | Sub-Skill | Section Violated | Description | Recommended Fix |
-|------|-----------|-----------------|-------------|-----------------|
-| `RiskService.cs` | Async Patterns | Async/Await Patterns | `.Result` blocking call | Convert to `await` with `ConfigureAwait(false)` |
-| `Program.cs` | Configuration | Configuration & Settings | Raw `IConfiguration["Key"]` access | Replace with strongly-typed options |
+| File | Sub-Skill | Severity | Description | Recommended Fix |
+|------|-----------|----------|-------------|-----------------|
+| `RiskService.cs` | Async Patterns | Critical | `.Result` blocking call | Convert to `await` with `ConfigureAwait(false)` |
+| `Program.cs` | Configuration | Warning | Raw `IConfiguration["Key"]` access | Replace with strongly-typed options |
 
 Each row is followed by a `✅` confirmation once the fix has been written to disk.
 
@@ -102,7 +102,7 @@ If the model hits its context window during a large run, it will print a checkpo
 Sub-skills completed : 1–5
 Files fully reviewed : RiskService.cs, CategoryService.cs
 Remaining files      : RiskRepository.cs, MongoDbContext.cs
-Remaining sub-skills : 6 (Configuration), 7 (Error Handling), 8 (Perf & Security), 9 (Code Quality)
+Remaining sub-skills : 6 (Configuration), 7 (Error Handling), 8 (Code Quality)
 ```
 
 Simply reply **"continue"** and the skill will pick up from where it left off.

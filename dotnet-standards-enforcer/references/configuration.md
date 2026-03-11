@@ -19,15 +19,21 @@ Analyze `${selection}` if provided. If no selection is made, analyze ALL C# file
 - Apply validation attributes: `[Required]`, `[Range]`, `[MinLength]`, etc.
 - Bind configuration via `IConfiguration.GetSection("Key").Get<TOptions>()` or `services.Configure<TOptions>()`.
 - Support `appsettings.json` and `appsettings.{Environment}.json` overrides.
+- Choose the correct `IOptions` variant based on service lifetime:
+  - `IOptions<T>` — singleton, does **not** reload; use for app-startup configuration.
+  - `IOptionsSnapshot<T>` — scoped, reloads per request; use in web APIs.
+  - `IOptionsMonitor<T>` — singleton, fires change notifications; use for long-running background services.
+- Options classes should be `sealed` to prevent inheritance from bypassing validation.
+- Use the `required` keyword (C# 11+) on mandatory string/reference properties instead of relying solely on `[Required]`.
 
 ### Example
 
 ```csharp
 // Strongly-typed options class
-public class DatabaseOptions
+public sealed class DatabaseOptions
 {
     [Required]
-    public string ConnectionString { get; init; } = string.Empty;
+    public required string ConnectionString { get; init; }
 
     [Range(1, 300)]
     public int CommandTimeoutSeconds { get; init; } = 30;
@@ -43,6 +49,6 @@ builder.Services
 
 ## Findings Summary Format
 
-| File | Section Violated | Description | Recommended Fix |
-|------|-----------------|-------------|-----------------|
-| ...  | Configuration & Settings | Raw `IConfiguration["Key"]` string access | Replace with strongly-typed options class bound via `Configure<T>()` |
+| File | Severity | Section Violated | Description | Recommended Fix |
+|------|----------|-----------------|-------------|-----------------||
+| ...  | Warning  | Configuration & Settings | Raw `IConfiguration["Key"]` string access | Replace with strongly-typed options class bound via `Configure<T>()` |

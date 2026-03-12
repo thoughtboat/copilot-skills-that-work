@@ -37,5 +37,5 @@ public async Task<Risk?> GetByIdAsync(Guid id, CancellationToken cancellationTok
 ## Findings Summary Format
 
 | File | Severity | Section Violated | Description | Recommended Fix |
-|------|----------|-----------------|-------------|-----------------||
+|------|----------|-----------------|-------------|-----------------|
 | ...  | Info     | Documentation & Structure | Missing XML doc on public method `GetByIdAsync` | Add `<summary>`, `<param>`, `<returns>` tags |

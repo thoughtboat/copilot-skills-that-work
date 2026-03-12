@@ -20,7 +20,7 @@ Invoke this skill when the user asks to:
 - **Apply coding standards or best practices** to a specific area or the whole codebase.
 - **Prepare code for a pull request or code review** by ensuring it meets team standards.
 - **Onboard a new codebase** to organisation-wide .NET conventions.
-- Explicitly reference a sub-skill area: documentation, architecture, DI, localisation, async patterns, configuration, error handling, or code quality.
+- Explicitly reference a sub-skill area: documentation, architecture, DI, localization, async patterns, configuration, error handling, or code quality.
 
 > See [references/trigger-phrases.md](references/trigger-phrases.md) for example trigger phrases per category.
 
@@ -36,7 +36,12 @@ Before processing any files, inspect every `*.csproj` in the workspace:
 
 - Read `<LangVersion>` and `<TargetFramework>` / `<TargetFrameworks>`.
 - Record the minimum C# language version across all projects.
-- Sub-skills that reference **C# 10+** features (file-scoped namespaces), **C# 11+** features (`required` keyword), or **C# 12+** features (collection expressions, primary constructors) must only be applied when the detected language version supports them.
+- Sub-skills that reference **C# 10+** features (file-scoped namespaces), **C# 11+** features (`required` keyword), **C# 12+** features (collection expressions, primary constructors), **C# 13+** features (`params ReadOnlySpan<T>`), or **C# 14+** features (`field` keyword, `extension` member syntax) must only be applied when the detected language version supports them.
+- Determine the set of target frameworks (e.g., `net6.0`, `net7.0`, `net8.0`, `net8.0-*`) across all projects, and identify the lowest target framework.
+- Only apply **.NET runtime–specific** recommendations when the target frameworks support them:
+  - Treat `net8.0` and `net8.0-*` as supporting .NET 8 APIs (e.g., `IExceptionHandler`, Keyed DI services, `IProblemDetailsService`).
+  - When all projects target **only `net6.0` / `net7.0`**, do **not** recommend APIs that were introduced in .NET 8 or later; instead, prefer equivalent patterns compatible with those target frameworks.
+  - For multi-targeted projects, default to guidance that is compatible with the **lowest** target framework unless the user explicitly requests advice for a newer target.
 
 ## Scope
 
@@ -51,7 +56,7 @@ Skip files matching these patterns — applying fixes to generated or migrated c
 - `**/Migrations/**` — EF Core migration files
 
 **Test projects** (files under a project whose name contains `Tests`, `Specs`, or `Test`):
-- Skip sub-skills **1 (Documentation)** and **4 (Localization)** — these produce noise in test code.
+- Skip sub-skills **4 (Localization)** — these produce noise in test code.
 - Apply all remaining sub-skills normally.
 
 ## Execution Rules
@@ -59,7 +64,7 @@ Skip files matching these patterns — applying fixes to generated or migrated c
 - **Before applying each sub-skill**, use the file reading tool to load the sub-skill file listed in the table below. Do not rely on memorised rules.
 - Process **every file in scope**. Do not skip any.
 - Execute **each sub-skill below in order**, sequentially, for every file.
-- After completing all sub-skills, output a **consolidated findings summary table** grouped by file and category.
+- After completing all sub-skills, output a **consolidated findings summary table** grouped by file and sub-skill.
 - For each finding, **write the corrected code directly to the file** using the file editing tools. Use `// ...existing code...` to preserve unchanged sections.
 - **APPLY ALL CHANGES after the summary table** — do not stop at summarising. Every finding must result in an implemented edit.
 - **DO NOT STOP** until every sub-skill has been applied to every file in scope and every finding has been fixed.
@@ -103,5 +108,5 @@ After outputting the summary table, apply findings in order:
 2. Write the corrected code directly to the file.
 3. Preserve all unchanged code using `// ...existing code...`.
 4. Confirm each applied fix with a `✅` checklist item.
-5. **Critical and Warning** findings must all be fixed. **Info** findings are optional but encouraged.
-6. Do not stop until all Critical and Warning findings are written to disk.
+5. **Critical, Warning and Info** findings must all be fixed.
+6. Do not stop until all **Critical, Warning and Info** findings are written to disk.

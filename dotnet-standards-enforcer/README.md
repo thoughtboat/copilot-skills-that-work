@@ -8,8 +8,10 @@ A GitHub Copilot **skill** that acts as a master orchestrator, enforcing code st
 
 | Platform | Version |
 |----------|---------|
-| .NET     | **8.0 +** |
-| C#       | **14** |
+| .NET     | **6.0 +** |
+| C#       | **10 +** |
+
+> **Version-gated guidance** — The skill reads every `*.csproj` and identifies the lowest `<TargetFramework>` across the workspace. Sub-skills that rely on .NET 8 APIs (e.g. `IExceptionHandler`, Keyed DI services, `IProblemDetailsService`) are only applied when **all** targeted projects support `net8.0` or later. Projects targeting only `net6.0` or `net7.0` receive equivalent guidance using APIs available on those frameworks.
 
 ---
 
@@ -17,11 +19,29 @@ A GitHub Copilot **skill** that acts as a master orchestrator, enforcing code st
 
 When invoked, the skill:
 
-1. Scopes the analysis to either the current **selection** or **all `*.cs` files** in the workspace.
-2. Runs eight ordered sub-skills against every file in scope.
-3. Outputs a **consolidated findings summary table** (file · sub-skill · violation · recommended fix).
-4. **Writes every fix directly to disk** — it does not stop at suggestions.
-5. If the context window is exhausted mid-run it emits a **checkpoint summary** so the review can be resumed in the next prompt.
+1. **Inspects every `*.csproj`** in the workspace to detect `<LangVersion>` and `<TargetFramework>` before touching any source. Sub-skills that rely on C# 10-14 (and newer) features are only applied when the detected language version supports them. .NET 8-only runtime APIs are similarly skipped when the lowest target framework is `net6.0` or `net7.0`, with compatible alternatives suggested instead.
+2. Scopes the analysis to either the current **selection** or **all `*.cs` files** in the workspace, skipping excluded paths (see [Excluded files](#excluded-files) below).
+3. Runs eight ordered sub-skills against every file in scope.
+4. Outputs a **consolidated findings summary table** (file · sub-skill · severity · violation · recommended fix).
+5. **Writes every fix directly to disk** — it does not stop at suggestions.
+6. If the context window is exhausted mid-run it emits a **checkpoint summary** so the review can be resumed in the next prompt.
+
+---
+
+## Excluded files
+
+The following paths are always skipped to avoid breaking generated or migrated code:
+
+| Pattern | Reason |
+|---------|--------|
+| `**/*.g.cs`, `**/*.Designer.cs` | Auto-generated source |
+| `**/obj/**`, `**/bin/**` | Build output |
+| `**/Migrations/**` | EF Core migration files |
+
+**Test projects** (any project whose name contains `Tests`, `Specs`, or `Test`) have reduced coverage:
+
+- Sub-skill **4 (Localization)** is skipped as it produces noise in test code.
+- All other sub-skills run normally.
 
 ---
 
@@ -75,7 +95,7 @@ When invoked, the skill:
 Reference the sub-skill file directly when you only need one category checked:
 
 ```
-Read .github/skills/dotnet-standards-enforcer/skills/async-patterns.md and apply it to all C# files.
+Read .github/skills/dotnet-standards-enforcer/references/async-patterns.md and apply it to all C# files.
 ```
 
 ---
@@ -115,7 +135,7 @@ Simply reply **"continue"** and the skill will pick up from where it left off.
 .github/skills/dotnet-standards-enforcer/
 ├── README.md               ← this file
 ├── SKILL.md                ← orchestrator loaded by Copilot
-└── skills/
+└── references/
     ├── documentation.md
     ├── architecture.md
     ├── di-services.md

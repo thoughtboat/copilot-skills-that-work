@@ -45,5 +45,5 @@ public static class RiskServiceExtensions
 ## Findings Summary Format
 
 | File | Severity | Section Violated | Description | Recommended Fix |
-|------|----------|-----------------|-------------|-----------------||
+|------|----------|-----------------|-------------|-----------------|
 | ...  | Warning  | Dependency Injection & Services | Service registered without interface | Extract interface and register via `AddScoped<IFoo, Foo>()` |

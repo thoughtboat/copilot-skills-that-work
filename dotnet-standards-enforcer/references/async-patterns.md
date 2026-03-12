@@ -42,5 +42,5 @@ public async Task<Risk?> GetByIdAsync(Guid id, CancellationToken cancellationTok
 ## Findings Summary Format
 
 | File | Severity | Section Violated | Description | Recommended Fix |
-|------|----------|-----------------|-------------|-----------------||
+|------|----------|-----------------|-------------|-----------------|
 | ...  | Critical | Async/Await Patterns | Synchronous blocking call `.Result` used | Convert to `await` with `ConfigureAwait(false)` |

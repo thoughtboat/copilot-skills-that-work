@@ -50,5 +50,5 @@ builder.Services
 ## Findings Summary Format
 
 | File | Severity | Section Violated | Description | Recommended Fix |
-|------|----------|-----------------|-------------|-----------------||
+|------|----------|-----------------|-------------|-----------------|
 | ...  | Warning  | Configuration & Settings | Raw `IConfiguration["Key"]` string access | Replace with strongly-typed options class bound via `Configure<T>()` |

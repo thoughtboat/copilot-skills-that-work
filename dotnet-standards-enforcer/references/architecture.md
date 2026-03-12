@@ -18,7 +18,7 @@ Analyze `${selection}` if provided. If no selection is made, analyze ALL C# file
 - Use **primary constructor syntax** for dependency injection.
 - Implement the **Command/Handler pattern** (or mediator pattern) to separate command intent from implementation. Generic base classes (e.g., `CommandHandler<TOptions>`) are one approach; align with whatever handler pattern is already established in the codebase.
 - Use **interface segregation** with clear naming conventions (prefix interfaces with `I`).
-- For projects that use a feature-folder or service-layer convention, place implementations in a separate `Impl/` subfolder. This is a **recommended convention, not a hard requirement** — do not move files if the project already has an established folder structure (Clean Architecture, vertical slices, etc.).
+- For projects that use a feature-folder or service-layer convention, place implementations in a separate `Impl/` subfolder. This is a **recommended convention, not a hard requirement**. Do not move files if the project already has an established folder structure (Clean Architecture, vertical slices, etc.).
 - Follow the **Factory pattern** for complex object creation.
 - Prefer **`record`** types for immutable value objects and DTOs. Use `record struct` for small, allocation-sensitive value types.
 
@@ -53,5 +53,5 @@ public class RiskService(IRiskRepository repository)
 ## Findings Summary Format
 
 | File | Severity | Section Violated | Description | Recommended Fix |
-|------|----------|-----------------|-------------|-----------------||
+|------|----------|-----------------|-------------|-----------------|
 | ...  | Info     | Design Patterns & Architecture | Implementation class not in `Impl/` folder | Consider moving to `Impl/` subfolder if project uses that convention |

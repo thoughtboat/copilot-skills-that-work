@@ -48,5 +48,5 @@ public static partial class Log
 ## Findings Summary Format
 
 | File | Severity | Section Violated | Description | Recommended Fix |
-|------|----------|-----------------|-------------|-----------------||
+|------|----------|-----------------|-------------|-----------------|
 | ...  | Warning  | Error Handling & Logging | String interpolation used in log call | Replace with structured message template |

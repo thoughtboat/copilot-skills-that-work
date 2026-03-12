@@ -7,8 +7,6 @@ description: >-
   add documentation, fix async patterns, check DI registration, check error handling, fix configuration,
   bring this up to standard, make this code production-ready.
   DO NOT USE FOR: non-.NET codebases, read-only .NET questions, trivial single-variable edits.
-version: "1.1.1"
-updatedAt: "2026-03-11"
 ---
 
 ## Use When

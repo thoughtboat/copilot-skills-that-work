@@ -11,22 +11,18 @@ description: >-
 
 ## Use When
 
-Invoke this skill when the user asks to:
-
-- **Review, audit, or enforce** .NET / C# coding standards across a solution or project.
-- **Fix or clean up** code quality issues in one or more C# files.
-- **Apply coding standards or best practices** to a specific area or the whole codebase.
-- **Prepare code for a pull request or code review** by ensuring it meets team standards.
-- **Onboard a new codebase** to organisation-wide .NET conventions.
-- Explicitly reference a sub-skill area: documentation, architecture, DI, localization, async patterns, configuration, error handling, or code quality.
+- Review, audit, or enforce .NET/C# coding standards
+- Fix or clean up code quality issues in one or more C# files
+- Apply best practices, prepare for PR/code review, or onboard a codebase
+- Target a sub-skill area: documentation, architecture, DI, localization, async patterns, configuration, error handling, or code quality
 
 > See [references/trigger-phrases.md](references/trigger-phrases.md) for example trigger phrases per category.
 
-Do **not** invoke this skill for:
+## Do Not Invoke For
 
-- Non-C# / non-.NET codebases.
-- Read-only questions about .NET (e.g. "how does `IOptions` work?") — answer directly without running the full skill.
-- Single-file, trivial edits unrelated to standards (e.g. "rename this variable", "add a property").
+- Non-C# / non-.NET codebases
+- Read-only .NET questions — answer directly without running the full skill
+- Trivial edits unrelated to standards (e.g. rename a variable, add a property)
 
 ## Pre-Flight: Detect Target Framework
 
@@ -93,10 +89,7 @@ After all sub-skills are complete, produce a single Markdown table:
 |------|-----------|----------|-------------|-----------------|
 | ...  | ...       | Critical / Warning / Info | ...         | ...             |
 
-**Severity definitions:**
-- **Critical** — runtime risk or correctness bug. Must be fixed before merging.
-- **Warning** — standards violation that degrades maintainability or performance.
-- **Info** — style or convention improvement; no functional impact.
+**Severity:** Critical = correctness/runtime risk · Warning = maintainability/perf · Info = style
 
 ## Apply Findings
 
